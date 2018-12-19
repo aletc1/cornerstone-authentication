@@ -1,0 +1,84 @@
+{
+  "name": "@cornerstone/authentication",
+  "version": "0.0.1",
+  "description": "Another authentication library between iframes",
+  "main": "lib/cornerstone-authentication.js",
+  "unpkg": "lib/cornerstone-authentication.min.js",
+  "module": "lib/cornerstone-authentication.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib/*.*"
+  ],
+  "scripts": {
+    "clean": "shx rm -rf lib dist",
+    "build": "npm run clean && tsc && webpack --mode production && copyfiles -f lib/src/*.d.ts lib && shx rm -rf lib/src lib/test",
+    "debug": "mocha --inspect-brk --require ts-node/register --require source-map-support/register --require jsdom-global/register --recursive --watch-extensions ts test/tests.tsx",
+    "test": "mocha -r ts-node/register -r jsdom-global/register -r source-map-support/register --recursive test/tests.tsx",
+    "cover": "nyc mocha --timeout=3000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aletc1/cornerstone-authentication.git"
+  },
+  "keywords": [
+    "react",
+    "iframes",
+    "microfrontends"
+  ],
+  "author": {
+    "name": "Alejandro Tamayo Castillo",
+    "email": "aletc1@msn.com",
+    "url": "https://www.linkedin.com/in/atamayocastillo"
+  },
+  "license": "GPLv3",
+  "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "exclude": [
+      "coverage",
+      "test",
+      "lib",
+      "webpack.config.js",
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "html"
+    ],
+    "all": true
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/enzyme": "^3.1.15",
+    "@types/enzyme-adapter-react-16": "^1.0.3",
+    "@types/mocha": "^5.2.5",
+    "@types/reflect-metadata": "^0.1.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "chai": "^4.2.0",
+    "copyfiles": "^2.1.0",
+    "enzyme": "^3.8.0",
+    "enzyme-adapter-react-16": "^1.7.1",
+    "jsdom": "^13.1.0",
+    "jsdom-global": "^3.0.2",
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "reflect-metadata": "^0.1.12",
+    "shx": "^0.3.2",
+    "source-map-support": "^0.5.9",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.2",
+    "webpack": "^4.27.1",
+    "webpack-bundle-analyzer": "^3.0.3",
+    "webpack-cli": "^3.1.2"
+  },
+  "peerDependencies": {
+    "react": "^16.6.3",
+    "reflect-metadata": "^0.1.12"
+  },
+  "dependencies": {
+    "@cornerstone/communications": "git+https://github.com/aletc1/cornerstone-communications.git"
+  }
+}
