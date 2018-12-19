@@ -2,9 +2,9 @@
   "name": "@cornerstone/authentication",
   "version": "0.0.1",
   "description": "Another authentication library between iframes",
-  "main": "lib/cornerstone-authentication.js",
+  "main": "lib/cornerstone-authentication.min.js",
   "unpkg": "lib/cornerstone-authentication.min.js",
-  "module": "lib/cornerstone-authentication.js",
+  "module": "lib/cornerstone-authentication.min.js",
   "typings": "lib/index.d.ts",
   "files": [
     "lib/*.*"

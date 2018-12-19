@@ -42,4 +42,4 @@ import 'reflect-metadata';
 
 ## License
 
-This solution is licensed under GPLv3. If you need commercial support or other licensing terms, contact the author.
+This solution is licensed under GPLv3. If you need commercial support or other licensing terms, please contact the author.
