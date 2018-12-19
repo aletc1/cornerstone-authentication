@@ -1,4 +1,5 @@
 import * as React from 'react';
+export declare const AuthenticationContext: any;
 interface SecureContentProps {
     config: AuthenticationConfig;
     children?: React.ReactNode;
@@ -27,6 +28,6 @@ declare class SecureContent extends React.Component<SecureContentProps, SecureCo
     private onMessageReceived;
     componentWillMount(): void;
     private authenticate;
-    render(): {} | null | undefined;
+    render(): {};
 }
 export default SecureContent;

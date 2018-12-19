@@ -1,6 +1,8 @@
 import * as React from 'react';
 import communicator from '@cornerstone/communications';
-import * as AuthenticationContext from './adal';
+import AuthenticationContext_ from './adal';
+
+export const AuthenticationContext = AuthenticationContext_;
 
 interface SecureContentProps {
     config: AuthenticationConfig;
@@ -185,10 +187,10 @@ class SecureContent extends React.Component<SecureContentProps, SecureContentSta
                 break;
             case 'AUTHENTICATION_RESPONSE':
                 var result = payload as AuthenticationResult
+                this.setState({ authenticating: false, error: result.error });
                 if (this.props.onAuthentication) {
                     this.props.onAuthentication(result);
                 }
-                this.setState({ authenticating: false, error: result.error });
                 break;
         }
     }
@@ -200,10 +202,10 @@ class SecureContent extends React.Component<SecureContentProps, SecureContentSta
             }, 'parent')
         } else {
             this.authenticate(this.props.config.resource).then(result => {
+                this.setState({ authenticating: false, error: result.error });
                 if (this.props.onAuthentication) {
                     this.props.onAuthentication(result);
                 }
-                this.setState({ authenticating: false, error: result.error });
             }).catch(error => {
                 this.setState({ error: error });
             });
@@ -245,10 +247,10 @@ class SecureContent extends React.Component<SecureContentProps, SecureContentSta
         if (this.state.error) {
             return <div>
                 <h1>ERROR</h1>
-                <p>{this.state.error}</p>
+                <p>{JSON.stringify(this.state.error)}</p>
             </div>;
         }
-        return (this.state.authenticating) ? (this.props.authenticatingView || <AuthenticatingView />) : this.props.children;
+        return (this.state.authenticating) ? (this.props.authenticatingView || <AuthenticatingView />) : (this.props.children || <div></div>);
     }
 }
 export default SecureContent;

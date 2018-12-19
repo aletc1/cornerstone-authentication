@@ -72,13 +72,12 @@
     "typescript": "^3.2.2",
     "webpack": "^4.27.1",
     "webpack-bundle-analyzer": "^3.0.3",
-    "webpack-cli": "^3.1.2"
+    "webpack-cli": "^3.1.2",
+    "@cornerstone/communications": "git+https://github.com/aletc1/cornerstone-communications.git"
   },
   "peerDependencies": {
     "react": "^16.6.3",
-    "reflect-metadata": "^0.1.12"
-  },
-  "dependencies": {
+    "reflect-metadata": "^0.1.12",
     "@cornerstone/communications": "git+https://github.com/aletc1/cornerstone-communications.git"
   }
 }
