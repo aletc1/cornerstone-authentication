@@ -142,7 +142,6 @@ class AuthenticationService {
                     if (err) {
                         // Initiate login
                         authenticationContext.login();
-                        reject("Starting login workflow");
                     } else {
                         self._identityToken = idToken;
                         if (self._authPromiseResolver) {
