@@ -168,11 +168,13 @@ class SecureContent extends React.Component<SecureContentProps, SecureContentSta
             authenticating: true,
             error: undefined
         }
-        if (this.props.microserviceMode) {
-            communicator.addListener(this.onMessageReceived);
-        }
+		
         this.onMessageReceived = this.onMessageReceived.bind(this);
         this.authenticate = this.authenticate.bind(this);
+		
+        if (props.microserviceMode) {
+            communicator.addListener(this.onMessageReceived);
+        }
     }
 
     private onMessageReceived(from: string, type: string, payload: any) {
