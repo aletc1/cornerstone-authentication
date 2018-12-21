@@ -24,8 +24,11 @@ function AuthenticatingView(props: any) {
 interface AuthenticationConfig {
     type: 'adal' | 'oidc',
     clientId: string,
+    tenant?: string,
     authority?: string,
     resource?: string,
+    redirectUri?: string, 
+    extraQueryParameter?: string
 }
 
 interface AuthenticationResult {
@@ -60,7 +63,11 @@ class AuthenticationService {
 
         return this._authenticationContext || (this._authenticationContext = new AuthenticationContext({
             clientId: this.config.clientId,
-            popUp: isInsideIframe(),
+            tenant: this.config.tenant,
+            instance: this.config.authority,
+            extraQueryParameter: this.config.extraQueryParameter,
+            redirectUri: this.config.redirectUri,
+            popUp: false,
             callback: this.onAuthentication,
             //redirectUri: window.location.origin + "/tab-auth/silent-end",
             cacheLocation: "localStorage",

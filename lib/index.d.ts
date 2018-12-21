@@ -14,8 +14,11 @@ interface SecureContentStatus {
 interface AuthenticationConfig {
     type: 'adal' | 'oidc';
     clientId: string;
+    tenant?: string;
     authority?: string;
     resource?: string;
+    redirectUri?: string;
+    extraQueryParameter?: string;
 }
 interface AuthenticationResult {
     idToken: string | undefined;
