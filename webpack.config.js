@@ -32,7 +32,8 @@ module.exports = (env) => {
                 'react': path.resolve(__dirname, './node_modules/react'),
                 '@cornerstone/communications': path.resolve(__dirname, './node_modules/@cornerstone/communications'),
                 'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
-                'reflect-metadata': path.resolve(__dirname, './node_modules/reflect-metadata')
+                'reflect-metadata': path.resolve(__dirname, './node_modules/reflect-metadata'),
+                'oidc-client': path.resolve(__dirname, './node_modules/oidc-client'),
             }
         },
         // Activate source maps for the bundles in order to preserve the original
@@ -77,7 +78,13 @@ module.exports = (env) => {
                 commonjs2: "reflect-metadata",
                 amd: "ReflectMetadata",
                 root: "ReflectMetadata"
-            }
+            },
+            "oidc-client": {
+                commonjs: "oidc-client",
+                commonjs2: "oidc-client",
+                amd: "oidc-client",
+                root: "oidc-client"
+            }            
         }
     };
 };
