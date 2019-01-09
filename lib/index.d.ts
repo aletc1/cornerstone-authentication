@@ -1,36 +1,4 @@
-import * as React from 'react';
-export declare const AuthenticationContext: any;
-interface SecureContentProps {
-    config: AuthenticationConfig;
-    children?: React.ReactNode;
-    authenticatingView?: React.ReactNode;
-    onAuthentication?: (result: AuthenticationResult) => void;
-    microserviceMode?: boolean;
-}
-interface SecureContentStatus {
-    authenticating: boolean;
-    error: string | undefined;
-}
-interface AuthenticationConfig {
-    type: 'adal' | 'oidc';
-    clientId: string;
-    tenant?: string;
-    authority?: string;
-    resource?: string;
-    redirectUri?: string;
-    extraQueryParameter?: string;
-}
-interface AuthenticationResult {
-    idToken: string | undefined;
-    accessToken: string | undefined;
-    error: string | undefined;
-}
-declare class SecureContent extends React.Component<SecureContentProps, SecureContentStatus> {
-    private authenticationService;
-    constructor(props: SecureContentProps);
-    private onMessageReceived;
-    componentWillMount(): void;
-    private authenticate;
-    render(): {};
-}
-export default SecureContent;
+export { AuthenticationService, AuthenticationConfig, AuthResult, UserProfileResult } from './authentication.service';
+export { AuthenticationAdalService } from './authentication.adal.service';
+export { AuthenticationOidcService } from './authentication.oidc.service';
+export { SecureContent } from './secure.content';
