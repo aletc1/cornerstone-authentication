@@ -49,7 +49,7 @@ export class AuthenticationAdalService implements AuthenticationService {
         if (!resource)
             for (var prop in this._accessTokens)
                 return this._accessTokens[prop];
-        return this._accessTokens[resource];
+        return this._accessTokens[resource as string];
     }
 
     public get userProfile(): any | undefined {
@@ -68,8 +68,8 @@ export class AuthenticationAdalService implements AuthenticationService {
                 this._rejectPromiseResolver(errorDesc);
             }
         } else {
-            if (tokenType == 'access_token') {
-                this._accessTokens[this._lastResource] = token;
+            if (tokenType == 'access_token' && this._lastResource) {
+                this._accessTokens[this._lastResource as string] = token;
             }
             if (this._authPromiseResolver) {
                 this._authPromiseResolver(this.BuildAuthResultFromContext(this.context, tokenType == 'access_token' ? this._lastResource : undefined));
@@ -173,11 +173,11 @@ export class AuthenticationAdalService implements AuthenticationService {
         return user ? user.profile : undefined;
     }
 
-    private BuildAuthResultFromContext(authenticationContext: any, resource: string | undefined): AuthResult {
+    private BuildAuthResultFromContext(authenticationContext: any, resource?: string | undefined): AuthResult {
         this._identityToken = authenticationContext._getItem(authenticationContext.CONSTANTS.STORAGE.IDTOKEN);
         var cachedToken = authenticationContext.getCachedToken(resource);
         if (resource || cachedToken)
-        this._accessTokens[resource] = cachedToken;
+        this._accessTokens[resource as string] = cachedToken;
         this._user = authenticationContext.getCachedUser();
 
         let profile = this._user.profile;
@@ -185,7 +185,7 @@ export class AuthenticationAdalService implements AuthenticationService {
         // https://docs.microsoft.com/en-us/azure/architecture/multitenant-identity/claims
         return {
             idToken: this._identityToken,
-            accessToken: this._accessTokens[resource],            
+            accessToken: this._accessTokens[resource as string],            
             userProfile: <UserProfileResult>{
                 fullName: profile["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || profile["name"],
                 firstName: profile["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname"] || profile["given_name"],
