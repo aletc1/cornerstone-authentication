@@ -1681,15 +1681,26 @@ var AuthenticationContext = (function () {
         this.info('Add adal frame to document:' + iframeId);
         var adalFrame = document.getElementById(iframeId);
 
+        // added onload function 
+        var self = this;
+        var handleFrameCallback = function () {
+            if (adalFrame && adalFrame.contentWindow.location.hash) {
+                self.handleWindowCallback(adalFrame.contentWindow.location.hash);
+            }
+        }
+
         if (!adalFrame) {
             if (document.createElement && document.documentElement &&
                 (window.opera || window.navigator.userAgent.indexOf('MSIE 5.0') === -1)) {
                 var ifr = document.createElement('iframe');
                 ifr.setAttribute('id', iframeId);
                 ifr.setAttribute('aria-hidden', 'true');
+                // added sandbox attribute to prevent site from reloading, you only need the token
+                ifr.setAttribute('sandbox', 'allow-same-origin');
+                ifr.addEventListener('load', handleFrameCallback, false);
                 ifr.style.visibility = 'hidden';
                 ifr.style.position = 'absolute';
-                ifr.style.width = ifr.style.height = ifr.style.borderWidth = '0px';
+                ifr.style.width = ifr.style.height = ifr.borderWidth = '0px';
 
                 adalFrame = document.getElementsByTagName('body')[0].appendChild(ifr);
             }
@@ -1767,7 +1778,7 @@ var AuthenticationContext = (function () {
      * Returns true if the browser supports given storage type
      * @ignore
      */
-    AuthenticationContext.prototype._supportsStorage = function(storageType) {
+    AuthenticationContext.prototype._supportsStorage = function (storageType) {
         if (!(storageType in this._storageSupport)) {
             return false;
         }
@@ -1800,7 +1811,7 @@ var AuthenticationContext = (function () {
      * Returns true if browser supports localStorage, false otherwise.
      * @ignore
      */
-    AuthenticationContext.prototype._supportsLocalStorage = function () {        
+    AuthenticationContext.prototype._supportsLocalStorage = function () {
         return this._supportsStorage('localStorage');
     };
 

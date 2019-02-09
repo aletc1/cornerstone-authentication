@@ -1,15 +1,14 @@
-import AuthenticationContext_ from './adal';
+export const AuthenticationContext = require('./adal');
 import { isInsideIframe } from './global.functions.utils';
 import { AuthenticationConfig, AuthenticationService, AuthResult, UserProfileResult } from './authentication.service';
-
-export const AuthenticationContext = AuthenticationContext_;
 
 export class AuthenticationAdalService implements AuthenticationService {
     private config: AuthenticationConfig;
 
     private _identityToken: undefined | string;
-    private _accessToken: undefined | string;
+    private _accessTokens: { [id: string]: string; } = {};
     private _user: undefined | any;
+    private _lastResource: string | undefined;
 
     private _authPromiseResolver: undefined | ((value: AuthResult) => void);
     private _rejectPromiseResolver: undefined | ((value: string) => void);
@@ -43,7 +42,14 @@ export class AuthenticationAdalService implements AuthenticationService {
     }
 
     public get accessToken(): string | undefined {
-        return this._accessToken;
+        return this.getAccessToken(this._lastResource);
+    }
+
+    public getAccessToken(resource?: string): string | undefined {
+        if (!resource)
+            for (var prop in this._accessTokens)
+                return this._accessTokens[prop];
+        return this._accessTokens[resource];
     }
 
     public get userProfile(): any | undefined {
@@ -62,8 +68,11 @@ export class AuthenticationAdalService implements AuthenticationService {
                 this._rejectPromiseResolver(errorDesc);
             }
         } else {
+            if (tokenType == 'access_token') {
+                this._accessTokens[this._lastResource] = token;
+            }
             if (this._authPromiseResolver) {
-                this._authPromiseResolver(this.BuildAuthResultFromContext(this.context, undefined));
+                this._authPromiseResolver(this.BuildAuthResultFromContext(this.context, tokenType == 'access_token' ? this._lastResource : undefined));
             }
         }
         this._authPromiseResolver = undefined;
@@ -71,11 +80,12 @@ export class AuthenticationAdalService implements AuthenticationService {
     }
 
     public loginAsync(): Promise<AuthResult> {
-        return new Promise((resolve, reject) => {            
-            this._authPromiseResolver = resolve;            
+        return new Promise((resolve, reject) => {
+            var authenticationContext = this.context;        
+            this._authPromiseResolver = resolve;
+            this._rejectPromiseResolver = reject;      
             
             var self = this;
-            var authenticationContext = self.context;
             
             if (authenticationContext.isCallback(window.location.hash)) {
                 authenticationContext.handleWindowCallback(window.location.hash);
@@ -85,34 +95,42 @@ export class AuthenticationAdalService implements AuthenticationService {
                 return resolve(self.BuildAuthResultFromContext(authenticationContext, undefined));
             }
             else {
-                // No token, or token is expired
-                authenticationContext._renewIdToken(
-                    function (err: string, idToken: string) {
-                        if (err) {
-                            // Initiate login
-                            authenticationContext.login();
-                        } else {
-                            if (self._authPromiseResolver) {
-                                self._authPromiseResolver(self.BuildAuthResultFromContext(authenticationContext, undefined));
-                            }
-                            self._authPromiseResolver = undefined;
-                            self._rejectPromiseResolver = undefined;
-                        }
-                    });
+                authenticationContext.login();
+                //// No token, or token is expired
+                //authenticationContext._renewIdToken(
+                //    function (err: string, idToken: string) {
+                //        if (err) {
+                //            // Initiate login
+                //            authenticationContext.login();
+                //        } else {
+                //            if (self._authPromiseResolver) {
+                //                self._authPromiseResolver(self.BuildAuthResultFromContext(authenticationContext, undefined));
+                //            }
+                //            self._authPromiseResolver = undefined;
+                //            self._rejectPromiseResolver = undefined;
+                //        }
+                //    });
             }
         });
     }
 
     public authorizeAsync(resource: string): Promise<AuthResult> {
+        this._lastResource = resource;   
+
         return new Promise((resolve, reject) => {
-            
             if (!this.IsUserLoggedIn()) {
-                return reject("You need to login first before can obtain any token!");
+                reject("You need to login first before can obtain any token!");
+                this.loginAsync();
             }
-            
+
+            if (this._accessTokens[resource])
+                return this._accessTokens[resource];
+
             var self = this;
             var authenticationContext = self.context;
-
+            
+            this._authPromiseResolver = resolve;
+            this._rejectPromiseResolver = reject;   
             authenticationContext.acquireToken(resource, function (errorDesc: any, accessToken: string, error: any) {
                 if (error) { //acquire token failure
                     if (isInsideIframe()) {
@@ -127,7 +145,7 @@ export class AuthenticationAdalService implements AuthenticationService {
                     }
                     else {
                         // In this case the callback passed in the Authentication request constructor will be called.
-                        return  authenticationContext.acquireTokenRedirect(resource, null, null);
+                        return  authenticationContext.acquireTokenRedirect(resource);
                     }
                 }
                 else {
@@ -157,7 +175,9 @@ export class AuthenticationAdalService implements AuthenticationService {
 
     private BuildAuthResultFromContext(authenticationContext: any, resource: string | undefined): AuthResult {
         this._identityToken = authenticationContext._getItem(authenticationContext.CONSTANTS.STORAGE.IDTOKEN);
-        this._accessToken = resource ? authenticationContext.getCachedToken(resource) : undefined;
+        var cachedToken = authenticationContext.getCachedToken(resource);
+        if (resource || cachedToken)
+        this._accessTokens[resource] = cachedToken;
         this._user = authenticationContext.getCachedUser();
 
         let profile = this._user.profile;
@@ -165,7 +185,7 @@ export class AuthenticationAdalService implements AuthenticationService {
         // https://docs.microsoft.com/en-us/azure/architecture/multitenant-identity/claims
         return {
             idToken: this._identityToken,
-            accessToken: this._accessToken,            
+            accessToken: this._accessTokens[resource],            
             userProfile: <UserProfileResult>{
                 fullName: profile["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || profile["name"],
                 firstName: profile["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname"] || profile["given_name"],

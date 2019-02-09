@@ -120,6 +120,13 @@ export class SecureContent extends React.Component<SecureContentProps, SecureCon
 
     private authenticate(resource: string | undefined): Promise<AuthResult> {
         return new Promise<AuthResult>((resolve, reject) => {
+            if (this._authenticationService.identityToken) {
+                this._authenticationService.authorizeAsync(resource).then((authorizationResult: AuthResult) => {
+                    return resolve(authorizationResult);
+                }).catch(err => {
+                    reject(err);
+                });
+            }
             this._authenticationService.loginAsync().then((loginResult: AuthResult) => {
                 if (loginResult && resource) {
                     this._authenticationService.authorizeAsync(resource).then((authorizationResult: AuthResult) => {
