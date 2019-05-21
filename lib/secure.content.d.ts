@@ -19,6 +19,7 @@ interface SecureContentStatus {
 }
 export declare class SecureContent extends React.Component<SecureContentProps, SecureContentStatus> {
     private _authenticationService;
+    private _renewTokenTimer;
     constructor(props: SecureContentProps);
     GuardProps(props: SecureContentProps): void;
     componentWillMount(): void;

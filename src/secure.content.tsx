@@ -163,7 +163,7 @@ export class SecureContent extends React.Component<SecureContentProps, SecureCon
                 this._renewTokenTimer = null;
             }
             this._renewTokenTimer = setInterval(() => {
-                this.authenticate(this.props.authenticationConfiguration.backendApplicationId || this.props.authenticationConfiguration.serviceUrl).then(result => {
+                this.authenticate(this.props.authenticationConfiguration.resource).then(result => {
                     this.RaiseOnAuthenticationEvent(result);
                 })
             }, 300000)
