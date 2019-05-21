@@ -123,8 +123,8 @@ export class AuthenticationAdalService implements AuthenticationService {
                 this.loginAsync();
             }
 
-            if (this._accessTokens[resource])
-                return this._accessTokens[resource];
+            //if (this._accessTokens[resource])
+            //    return this._accessTokens[resource];
 
             var self = this;
             var authenticationContext = self.context;

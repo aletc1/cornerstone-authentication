@@ -26,6 +26,7 @@ interface SecureContentStatus {
 
 export class SecureContent extends React.Component<SecureContentProps, SecureContentStatus> {    
     private _authenticationService: AuthenticationService;
+    private _renewTokenTimer: any;
 
     constructor(props: SecureContentProps) {
         super(props);
@@ -155,6 +156,18 @@ export class SecureContent extends React.Component<SecureContentProps, SecureCon
         let authenticated = result && result.userProfile ? true : false;
         let authorized = this.props.authenticationConfiguration.resource && result && result.accessToken ? true : false;
         let error = result ? result.error : "unknown error";
+
+        if (authenticated) {
+            if (this._renewTokenTimer) {
+                window.clearInterval(this._renewTokenTimer);
+                this._renewTokenTimer = null;
+            }
+            this._renewTokenTimer = setInterval(() => {
+                this.authenticate(this.props.authenticationConfiguration.backendApplicationId || this.props.authenticationConfiguration.serviceUrl).then(result => {
+                    this.RaiseOnAuthenticationEvent(result);
+                })
+            }, 300000)
+        }
 
         this.setState({ 
             authenticating: authenticating, 
